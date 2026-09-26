@@ -39,5 +39,50 @@
 <body>
   <textarea placeholder="Type something..."></textarea>
   <textarea readonly placeholder="Output will appear here..."></textarea>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+
+<script>
+const input = document.getElementById("input");
+const output = document.getElementById("output");
+
+input.addEventListener("input", () => {
+  const expr = input.value.trim();
+
+  if (!expr) {
+    output.value = "";
+    return;
+  }
+
+  try {
+    // If no equals sign, just evaluate normally
+    if (!expr.includes("=")) {
+      output.value = math.evaluate(expr);
+      return;
+    }
+
+    // Split equation
+    const [left, right] = expr.split("=").map(s => s.trim());
+
+    // Detect all variables automatically
+    const vars = [...new Set(expr.match(/[a-zA-Z]+/g))];
+
+    if (vars.length === 0) {
+      output.value = "No variables found";
+      return;
+    }
+
+    // Solve equation symbolically
+    const solutions = math.solve(left + " = " + right, vars);
+
+    output.value = JSON.stringify(solutions, null, 2);
+  } catch (err) {
+    output.value = "Invalid equation";
+  }
+});
+</script>
+
+<footer>
+  <p>Copyright © 2026 Calculator Calcu</p>
+<footer>
 </body>
 </html>
